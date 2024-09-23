@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 52e2eecb57d38ca44a2387ded6ff6ca1
   m_currentHash:
     serializedVersion: 2
-    Hash: 5910aedf174f9f77ee736116e539c49c
+    Hash: 06984e1550426f5573c3275f93c41053
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
     m_Id: 
   m_RemoteCatalogLoadPath:
     m_Id: 
-  m_ContentStateBuildPathProfileVariableName: 
+  m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 0
@@ -58,15 +58,15 @@ MonoBehaviour:
       m_ProfileName: Default
       m_Values:
       - m_Id: 60b4bfd919e85a245b1665f0a3073016
-        m_Value: ServerData/[BuildTarget]
+        m_Value: https://zlengos.github.io/Test_Web_build4/Assets/Test_Web_build4/AddressableResources/Sprites
       - m_Id: 8a5b3da1c90617644aa875de10d9fc95
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
       - m_Id: 9037de3c649715b4c9de624b20ae0030
-        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/LocalBuildPath '
       - m_Id: e8f7d7827c3daf94dbfa500e5b6f2eb6
-        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
+        m_Value: https://zlengos.github.io/Test_Web_build4/Assets/Test_Web_build4/AddressableResources/Sprites
       - m_Id: faa2666d3640555459d1e87712404fef
-        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath} '
     m_ProfileEntryNames:
     - m_Id: 60b4bfd919e85a245b1665f0a3073016
       m_Name: Remote.BuildPath

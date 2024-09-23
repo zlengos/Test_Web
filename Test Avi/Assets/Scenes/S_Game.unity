@@ -408,7 +408,7 @@ MonoBehaviour:
   - {fileID: 612153928}
   - {fileID: 1029672305}
   - {fileID: 469538906}
-  spriteNamesConfig: {fileID: 11400000, guid: 364bd7fe3f2ff5b4697db755889eff53, type: 2}
+  atlasNamesConfig: {fileID: 11400000, guid: d5f22309ed1c24b48a5a4ac6efa9859c, type: 2}
 --- !u!1 &266573016
 GameObject:
   m_ObjectHideFlags: 0
@@ -1508,7 +1508,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u041A\u041D\u041E\u041F\u041A\u0410"
+  m_text: "\u041A\u041D\u041E\u041F\u041A\u0410A"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8df668e112519e545a6db00a927f03a4, type: 2}
   m_sharedMaterial: {fileID: -8944219538524964536, guid: 8df668e112519e545a6db00a927f03a4, type: 2}

@@ -5,7 +5,7 @@ public class PlatformDetector : MonoBehaviour
     private void Start()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Application.ExternalEval("detectPlatform();");
+        Application.ExternalEval("DetectPlatform();");
 #endif
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.U2D;
 
 public class SpriteLoader : MonoBehaviour
 {
@@ -9,15 +10,15 @@ public class SpriteLoader : MonoBehaviour
 
     [SerializeField] private SpriteRenderer[] spriteRenderers;
 
-    private const string DEFAULT_SPRITE_PATH = "Assets/AddressableResources/Sprites";
+    private const string DEFAULT_REMOTE_SPRITE_PATH = "https://zlengos.github.io/Test_Web_build4/Addressables/WebGL";
+    private const string DEFAULT_LOCAL_SPRITE_PATH = "Assets/AddressableResources/Sprites";
 
-    [SerializeField] private AddressableSpritesConfig spriteNamesConfig;
+    [SerializeField] private AddressableAtlasConfig atlasNamesConfig;
 
     #region Runtime
 
-    private AsyncOperationHandle<Sprite>[] _handles;
-
-    private string[] _spritePathes;
+    private AsyncOperationHandle<SpriteAtlas> _handle;
+    private string _atlasPath;
 
     #endregion
 
@@ -25,105 +26,86 @@ public class SpriteLoader : MonoBehaviour
 
     private void Awake()
     {
-        InitializeHandles();
-        ConcatSpritePaths();
+        InitializeHandle();
+        ConcatAtlasPath();
     }
 
-    private void InitializeHandles()
+    private void InitializeHandle()
     {
-        if (spriteNamesConfig.AllSprites.Length > 0)
+        if (atlasNamesConfig.AllAtlases.Length > 0)
         {
-            _handles = new AsyncOperationHandle<Sprite>[spriteNamesConfig.AllSprites.Length];
+            _handle = new AsyncOperationHandle<SpriteAtlas>();
         }
 #if UNITY_EDITOR
         else
         {
-            Debug.LogError($"{nameof(spriteNamesConfig)} is not initialized!");
+            Debug.LogError($"{nameof(atlasNamesConfig)} is not initialized!");
         }
 #endif
     }
 
-    private void ConcatSpritePaths()
+    private void ConcatAtlasPath()
     {
-        _spritePathes = new string[spriteNamesConfig.AllSprites.Length];
-        
-        for (int i = 0; i < spriteNamesConfig.AllSprites.Length; i++)
-        {
-            
-            _spritePathes[i] = $"{DEFAULT_SPRITE_PATH}/{spriteNamesConfig.AllSprites[i].Name}";
-        }
+#if UNITY_EDITOR
+        _atlasPath = $"{DEFAULT_LOCAL_SPRITE_PATH}/{atlasNamesConfig.AllAtlases[0].Name}";
+#else
+        _atlasPath = $"{DEFAULT_REMOTE_SPRITE_PATH}/{atlasNamesConfig.AllAtlases[0].Name.Replace(" ", "%20")}";
+#endif
     }
 
     public void LoadAll()
     {
+        StartCoroutine(LoadAtlasCoroutine());
+    }
+
+    private IEnumerator LoadAtlasCoroutine()
+    {
+        _handle = Addressables.LoadAssetAsync<SpriteAtlas>(_atlasPath);
+        yield return _handle;
+
+        if (_handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            SetupSpritesFromAtlas(_handle.Result);
+        }
+        else
+        {
+            Debug.LogError($"Can't load atlas. Path: {_atlasPath}");
+        }
+    }
+
+    private void SetupSpritesFromAtlas(SpriteAtlas atlas)
+    {
         for (int i = 0; i < spriteRenderers.Length; i++)
         {
-            LoadByIndex(i);
+            Sprite[] sprites = new Sprite[atlas.spriteCount];
+            atlas.GetSprites(sprites);
+
+            if (i < sprites.Length)
+            {
+                spriteRenderers[i].sprite = sprites[i];
+            }
+            else
+            {
+                Debug.LogWarning($"Not enough sprites in atlas to fill renderer at index {i}.");
+            }
         }
     }
 
-    public void LoadByIndex(int index)
+    public void UnloadAtlas()
     {
-        if (index < 0 || index >= spriteRenderers.Length)
+        if (_handle.IsValid())
         {
-            Debug.LogError($"Index {index} out of {nameof(spriteRenderers)}.");
-            return;
-        }
-
-        if (_handles[index].IsValid())
-        {
-            Debug.LogWarning($"Sprite index {index} is already loaded.");
-            return;
-        }
-
-        StartCoroutine(LoadSpriteCoroutine(spriteRenderers[index], index));
-    }
-
-    private IEnumerator LoadSpriteCoroutine(SpriteRenderer renderer, int index)
-    {
-        _handles[index] = Addressables.LoadAssetAsync<Sprite>(_spritePathes[index]);
-        yield return _handles[index];
-
-        if (_handles[index].Status == AsyncOperationStatus.Succeeded)
-        {
-            renderer.sprite = _handles[index].Result;
-        }
-#if UNITY_EDITOR
-        else
-        {
-            Debug.LogError($"Can't load file. path: {_spritePathes[index]}");
-        }
-#endif
-    }
-
-    public void UnloadSprite(int index)
-    {
-        if (index < 0 || index >= _handles.Length)
-        {
-            Debug.LogError($"Index {index} out of {nameof(_handles)}.");
-            return;
-        }
-
-        if (_handles[index].IsValid())
-        {
-            Addressables.Release(_handles[index]);
-            _handles[index] = default;
+            Addressables.Release(_handle);
+            _handle = default;
         }
         else
         {
-            Debug.LogWarning($"There is no loaded sprite by index {index}.");
+            Debug.LogWarning("Atlas is not loaded.");
         }
     }
 
     private void OnDestroy()
     {
-        for (int i = 0; i < _handles.Length; i++)
-        {
-            if (_handles[i].IsValid())
-            {
-                Addressables.Release(_handles[i]);
-                _handles[i] = default;
-            }
-        }
+        UnloadAtlas();
     }
 }
